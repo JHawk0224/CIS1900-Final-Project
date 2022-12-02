@@ -5,6 +5,8 @@
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
+#include <vector>
+#include <deque>
 #include "random.hpp"
 
 using namespace std;
@@ -17,7 +19,7 @@ game::game(int width, int height) : width{width},
     vector<pair<int, int>> excludeLocs;
     for (auto snake : snakes)
     {
-        vector<pair<int, int>> body = snake.getBody();
+        deque<pair<int, int>> body = snake.getBody();
         excludeLocs.insert(excludeLocs.end(), body.begin(), body.end());
     }
     game::generateApples(1, excludeLocs);
@@ -38,7 +40,8 @@ int game::tick()
         {
             return -1;
         }
-        if (count(snake.getBody().begin(), snake.getBody().end(), inFront) > 0)
+        deque<pair<int, int>> body = snake.getBody();
+        if (count(body.begin(), body.end(), inFront) > 0)
         {
             return -1;
         }
@@ -51,7 +54,7 @@ int game::tick()
                 vector<pair<int, int>> excludeLocs;
                 for (auto snake : snakes)
                 {
-                    vector<pair<int, int>> body = snake.getBody();
+                    deque<pair<int, int>> body = snake.getBody();
                     excludeLocs.insert(excludeLocs.end(), body.begin(), body.end());
                 }
                 generateApples(1, excludeLocs);
@@ -91,7 +94,7 @@ ostream &operator<<(ostream &os, const game &g)
                 bool inSnake{false};
                 for (auto snake : g.snakes)
                 {
-                    vector<pair<int, int>> body = snake.getBody();
+                    deque<pair<int, int>> body = snake.getBody();
                     if (count(body.begin(), body.end(), loc) > 0)
                     {
                         inSnake = true;

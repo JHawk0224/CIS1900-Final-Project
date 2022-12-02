@@ -3,14 +3,14 @@
 
 #include <iostream>
 #include <memory>
-#include <vector>
+#include <deque>
 
 class snake
 {
 private:
     int length;
     int direction;
-    std::vector<std::pair<int, int>> positions;
+    std::deque<std::pair<int, int>> positions;
 public:
     snake(int, int);
     snake(int, int, int);
@@ -20,7 +20,7 @@ public:
     int getDirection();
     std::pair<int, int> getHead();
     std::pair<int, int> inFrontLoc();
-    std::vector<std::pair<int, int>> getBody();
+    std::deque<std::pair<int, int>> getBody();
     friend std::ostream &operator<<(std::ostream &os, const snake &s);
 };
 

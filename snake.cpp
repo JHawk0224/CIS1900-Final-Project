@@ -3,38 +3,42 @@
 #include <memory>
 #include <iostream>
 #include <iomanip>
-#include <vector>
+#include <deque>
 
 using namespace std;
 
 snake::snake(int x, int y) : length{1},
                             direction{0},
-                            positions{vector<pair<int, int>>{pair<int, int>{x, y}}}
+                            positions{deque<pair<int, int>>{pair<int, int>{x, y}}}
 {
 }
 
 snake::snake(int x, int y, int dir) : length{1},
                                      direction{dir},
-                                     positions{vector<pair<int, int>>{pair<int, int>{x, y}}}
+                                     positions{deque<pair<int, int>>{pair<int, int>{x, y}}}
 {
 }
 
 void snake::move(bool grow)
 {
+    for (auto pos : positions)
+    {
+        cout << pos.first << ", " << pos.second << endl;
+    }
+    positions.push_front(inFrontLoc());
     if (grow)
     {
         ++length;
-        positions.push_back(positions[length - 2]);
     }
     else
     {
-        for (int i{length - 1}; i > 0; --i)
-        {
-            positions[i] = positions[i - 1];
-        }
+        positions.pop_back();
     }
-
-    positions[0] = inFrontLoc();
+    cout << grow << endl;
+    for (auto pos : positions)
+    {
+        cout << pos.first << ", " << pos.second << endl;
+    }
 }
 
 void snake::setDirection(int dir)
@@ -52,14 +56,14 @@ int snake::getDirection()
     return direction;
 }
 
-std::pair<int, int> snake::getHead()
+pair<int, int> snake::getHead()
 {
-    return positions[0];
+    return positions.front();
 }
 
-std::pair<int, int> snake::inFrontLoc()
+pair<int, int> snake::inFrontLoc()
 {
-    pair<int, int> inFront = positions[0];
+    pair<int, int> inFront = positions.front();
     switch (direction)
     {
     case 0:
@@ -78,7 +82,7 @@ std::pair<int, int> snake::inFrontLoc()
     return inFront;
 }
 
-std::vector<std::pair<int, int>> snake::getBody()
+deque<pair<int, int>> snake::getBody()
 {
     return positions;
 }
