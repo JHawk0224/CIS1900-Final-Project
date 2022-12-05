@@ -4,6 +4,7 @@
 #include <iostream>
 #include <iomanip>
 #include <deque>
+#include <cstdlib>
 
 using namespace std;
 
@@ -34,7 +35,10 @@ void snake::move(bool grow)
 
 void snake::setDirection(int dir)
 {
-    direction = dir;
+    if (length <= 1 || abs(dir - direction) != 2)
+    {
+        direction = dir;
+    }
 }
 
 int snake::getLength()
