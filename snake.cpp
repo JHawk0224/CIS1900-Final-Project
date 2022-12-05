@@ -8,23 +8,19 @@
 using namespace std;
 
 snake::snake(int x, int y) : length{1},
-                            direction{0},
-                            positions{deque<pair<int, int>>{pair<int, int>{x, y}}}
+                             direction{0},
+                             positions{deque<pair<int, int>>{pair<int, int>{x, y}}}
 {
 }
 
 snake::snake(int x, int y, int dir) : length{1},
-                                     direction{dir},
-                                     positions{deque<pair<int, int>>{pair<int, int>{x, y}}}
+                                      direction{dir},
+                                      positions{deque<pair<int, int>>{pair<int, int>{x, y}}}
 {
 }
 
 void snake::move(bool grow)
 {
-    for (auto pos : positions)
-    {
-        cout << pos.first << ", " << pos.second << endl;
-    }
     positions.push_front(inFrontLoc());
     if (grow)
     {
@@ -33,11 +29,6 @@ void snake::move(bool grow)
     else
     {
         positions.pop_back();
-    }
-    cout << grow << endl;
-    for (auto pos : positions)
-    {
-        cout << pos.first << ", " << pos.second << endl;
     }
 }
 
