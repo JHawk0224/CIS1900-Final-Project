@@ -17,7 +17,7 @@ game::game(int width, int height) : width{width},
                                    apples{vector<pair<int, int>>{}}
 {
     vector<pair<int, int>> excludeLocs;
-    for (auto snake : snakes)
+    for (auto &snake : snakes)
     {
         deque<pair<int, int>> body = snake.getBody();
         excludeLocs.insert(excludeLocs.end(), body.begin(), body.end());
@@ -32,7 +32,7 @@ void game::generateApples(int numApples, vector<pair<int, int>> excludeLocs)
 
 int game::tick()
 {
-    for (auto snake : snakes)
+    for (auto &snake : snakes)
     {
         pair<int, int> inFront = snake.inFrontLoc();
         if (inFront.first < 0 || inFront.first >= width ||
@@ -52,7 +52,7 @@ int game::tick()
             if (apples.size() == 0)
             {
                 vector<pair<int, int>> excludeLocs;
-                for (auto snake : snakes)
+                for (auto &snake : snakes)
                 {
                     deque<pair<int, int>> body = snake.getBody();
                     excludeLocs.insert(excludeLocs.end(), body.begin(), body.end());
@@ -78,9 +78,16 @@ void game::turn(int snake_i, int dir)
 
 ostream &operator<<(ostream &os, const game &g)
 {
+    // top wall
+    for (int i{0}; i < g.width + 2; ++i)
+    {
+        os << setw(3) << "#";
+    }
+    os << "\n";
     // print row by row
     for (int i{0}; i < g.height; ++i)
     {
+        os << setw(3) << "#";
         for (int j{0}; j < g.width; ++j)
         {
             // print the value of the cell
@@ -111,8 +118,13 @@ ostream &operator<<(ostream &os, const game &g)
                 }
             }
         }
-
+        os << setw(3) << "#";
         os << "\n";
+    }
+    // top wall
+    for (int i{0}; i < g.width + 2; ++i)
+    {
+        os << setw(3) << "#";
     }
     return os;
 }

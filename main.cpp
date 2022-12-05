@@ -61,8 +61,29 @@ int main()
                 continue;
             }
 
+            string dir;
+            iss >> dir;
             int x;
-            iss >> x;
+            if (dir == "down")
+            {
+                x = 0;
+            }
+            else if (dir == "right")
+            {
+                x = 1;
+            }
+            else if (dir == "up")
+            {
+                x = 2;
+            }
+            else if (dir == "left")
+            {
+                x = 3;
+            }
+            else
+            {
+                x = stoi(dir);
+            }
             g->turn(0, x);
             cout << *g << endl;
         }
