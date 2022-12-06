@@ -12,3 +12,8 @@ I am going to be in a group by myself for this final project, so I will be doing
 By the first checkpoint, I will have the basic game done, with a class for the snake, the class for the game, and the main file completed. This is a priority since it is needed to continue working on the more complicated stuff. Then I will work on rendering the game properly with a TUI library and getting the controls to work. Then I will work on adding powerups, and finally, saving/loading the game to/from a file.
 
 I am also open to implementing other features or suggestions you have to improve my project or use more concepts we learned in class.
+
+Run the following commands to build and execute the program:
+1. `cmake .`
+2. `make`
+3. `./snake`
