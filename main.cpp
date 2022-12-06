@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <termox/termox.hpp>
 
 using namespace std;
 
