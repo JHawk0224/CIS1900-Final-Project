@@ -8,6 +8,7 @@ using namespace std;
 
 int main()
 {
+    return ox::System{}.run<ox::Textbox>("Hello, World!");
     string s;
     bool gameExists = false;
     unique_ptr<game> g;
