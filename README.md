@@ -13,7 +13,11 @@ By the first checkpoint, I will have the basic game done, with a class for the s
 
 I am also open to implementing other features or suggestions you have to improve my project or use more concepts we learned in class.
 
-Run the following commands to build and execute the program:
-1. `cmake .`
-2. `make`
-3. `./snake`
+Run the following commands to install, build, and run the program:
+1. `git clone https://github.com/JHawk0224/CIS1900-Final-Project`
+2. `mkdir TermOx/build && cd TermOx/build`
+3. `git submodule update --init --recursive`
+4. `cd ..`
+5. `cmake .`
+6. `make`
+7. `./snake`
