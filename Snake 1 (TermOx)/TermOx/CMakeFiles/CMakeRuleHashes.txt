@@ -1,0 +1,3 @@
+# Hashes of file build rules.
+56da02c268457042d755678f59ef6262 CMakeFiles/termox.all
+1ce482c30bf98bbb138da8a27c80f452 tests/CMakeFiles/termox.ui.tests

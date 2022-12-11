@@ -1,0 +1,9 @@
+build*/
+.clangd/
+.cache/
+compile_commands.json
+tags
+*.[ao]
+*.so
+*.out
+*.vim

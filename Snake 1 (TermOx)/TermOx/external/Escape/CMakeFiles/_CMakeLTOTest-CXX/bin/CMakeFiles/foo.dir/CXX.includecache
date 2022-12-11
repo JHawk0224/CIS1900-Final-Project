@@ -1,0 +1,10 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/jhawk/desktop/CIS 190/Personal/CIS1900-Final-Project/TermOx/external/Escape/CMakeFiles/_CMakeLTOTest-CXX/src/foo.cpp
+
