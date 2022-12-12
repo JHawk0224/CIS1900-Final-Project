@@ -22,6 +22,25 @@ int apple::getType()
     return type;
 }
 
+attr_t apple::getAttrs()
+{
+    switch (type)
+    {
+    case NORMAL:
+        return COLOR_PAIR(1);
+    case JUICY:
+        return COLOR_PAIR(4);
+    case INVINCY:
+        return COLOR_PAIR(5);
+    case SLOWY:
+        return COLOR_PAIR(3);
+    case SPEEDY:
+        return COLOR_PAIR(6);
+    default:
+        return A_NORMAL;
+    }
+}
+
 ostream &operator<<(ostream &os, const apple &a)
 {
     if (a.type == NORMAL)

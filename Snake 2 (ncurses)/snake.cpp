@@ -6,12 +6,16 @@ using namespace std;
 
 snake::snake(int x, int y) : length{1},
                              direction{RIGHT},
+                             invincible{false},
+                             attrs{A_NORMAL},
                              positions{deque<pair<int, int>>{pair<int, int>{x, y}}}
 {
 }
 
 snake::snake(int x, int y, int dir) : length{1},
                                       direction{dir},
+                                      invincible{false},
+                                      attrs{A_NORMAL},
                                       positions{deque<pair<int, int>>{pair<int, int>{x, y}}}
 {
 }
@@ -45,6 +49,26 @@ int snake::getLength()
 int snake::getDirection()
 {
     return direction;
+}
+
+bool snake::isInvincible()
+{
+    return invincible;
+}
+
+void snake::setInvincible(bool i)
+{
+    invincible = i;
+}
+
+attr_t snake::getAttrs()
+{
+    return attrs;
+}
+
+void snake::setAttrs(attr_t a)
+{
+    attrs = a;
 }
 
 pair<int, int> snake::getHead()

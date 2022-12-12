@@ -1,6 +1,7 @@
 #ifndef BOARD_HPP
 #define BOARD_HPP
 
+#include <cstdlib>
 #include <ncurses.h>
 #include <chrono>
 #include <sys/time.h>
@@ -54,6 +55,7 @@ public:
     }
     void setTimeout(int time_per_turn)
     {
+        timeout = time_per_turn;
         wtimeout(board_window, time_per_turn);
     }
     static time_t milliseconds()
@@ -62,6 +64,11 @@ public:
         {};
         gettimeofday(&curr_time, nullptr);
         return curr_time.tv_sec * 1000 + curr_time.tv_usec / 1000;
+    }
+    static int randomInt(int min, int max)
+    {
+        srand(milliseconds());
+        return (int)(rand() % (max - min)) + min;;
     }
     void clear()
     {
@@ -88,12 +95,12 @@ public:
         chtype input = wgetch(board_window);
         chtype new_input = ERR;
         chtype compare = ERR;
-        setTimeout(0);
+        wtimeout(board_window, 0);
         while (last_time + timeout >= milliseconds())
         {
             new_input = wgetch(board_window);
         }
-        setTimeout(timeout);
+        wtimeout(board_window, timeout);
         if (new_input != compare)
         {
             input = new_input;

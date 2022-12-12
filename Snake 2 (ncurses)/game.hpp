@@ -16,17 +16,21 @@ private:
     std::vector<apple> apples;
     board b;
     int score;
+    bool powerupLock;
     bool playing;
 public:
     game(int, int);
     game(int, int, int);
     void generateApples(int numApples, std::vector<std::pair<int, int>> excludeLocs, int type);
+    void mulSpeed(float);
+    void makeSnakeInvincible(int);
     int tick();
     void turn(int, int);
     bool isPlaying();
     int getScore();
     void processInput();
     void draw();
+    
     friend std::ostream &operator<<(std::ostream &os, const game &g);
 };
 

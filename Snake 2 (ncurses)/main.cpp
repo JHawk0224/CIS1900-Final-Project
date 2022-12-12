@@ -18,6 +18,7 @@ int main()
         return 1;
     }
     start_color();
+    init_color(COLOR_RED, 1000, 0, 0);
     init_pair(0, COLOR_WHITE, COLOR_BLACK);
     init_pair(1, COLOR_GREEN, COLOR_BLACK);
     init_pair(2, COLOR_RED, COLOR_BLACK);

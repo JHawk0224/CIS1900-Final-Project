@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <vector>
 #include <deque>
+#include <thread>
+#include <chrono>
 #include "random.hpp"
 #include "apple.hpp"
 #include "dir.hpp"
@@ -16,12 +18,13 @@ game::game(int width, int height) : width{width},
                                     apples{vector<apple>{}},
                                     b{board{width, height}},
                                     score{0},
+                                    powerupLock{false},
                                     playing{true}
 {
-    srand(board::milliseconds());
     vector<pair<int, int>> excludeLocs;
     for (auto &snake : snakes)
     {
+        snake.setAttrs(COLOR_PAIR(2));
         deque<pair<int, int>> body = snake.getBody();
         excludeLocs.insert(excludeLocs.end(), body.begin(), body.end());
     }
@@ -35,12 +38,13 @@ game::game(int width, int height, int timeout) : width{width},
                                                  apples{vector<apple>{}},
                                                  b{board{width, height, timeout}},
                                                  score{0},
+                                                 powerupLock{false},
                                                  playing{true}
 {
-    srand(board::milliseconds());
     vector<pair<int, int>> excludeLocs;
     for (auto &snake : snakes)
     {
+        snake.setAttrs(COLOR_PAIR(2));
         deque<pair<int, int>> body = snake.getBody();
         excludeLocs.insert(excludeLocs.end(), body.begin(), body.end());
     }
@@ -53,23 +57,46 @@ void game::generateApples(int numApples, vector<pair<int, int>> excludeLocs, int
     vector<pair<int, int>> appleLocs = randomAppleLocations(width, height, excludeLocs, numApples);
     for (auto &loc : appleLocs)
     {
-        int random = (int)(rand() * 100);
-        if (type == -1)
-        {
-            if (random < 15)
-            {
-                apples.push_back(apple{loc.first, loc.second, JUICY});
-            }
-            else
-            {
-                apples.push_back(apple{loc.first, loc.second, NORMAL});
-            }
-        }
-        else
+        
+        if (type != -1)
         {
             apples.push_back(apple{loc.first, loc.second, type});
         }
+        else
+        {
+            int random = b.randomInt(0, 100);
+            if (random < 60)
+            {
+                apples.push_back(apple{loc.first, loc.second, NORMAL});
+            }
+            else
+            {
+                random = b.randomInt(1, 5);
+                apples.push_back(apple{loc.first, loc.second, random});
+            }
+        }
     }
+}
+
+void game::mulSpeed(float factor)
+{
+    powerupLock = true;
+    int startTimeout = b.getTimeout();
+    b.setTimeout((int)(startTimeout / factor));
+    this_thread::sleep_for(chrono::milliseconds(5000));
+    b.setTimeout(startTimeout);
+    powerupLock = false;
+}
+
+void game::makeSnakeInvincible(int snake)
+{
+    powerupLock = true;
+    init_color(COLOR_RED, 1000, 392, 0);
+    snakes[snake].setInvincible(true);;
+    this_thread::sleep_for(chrono::milliseconds(5000));
+    snakes[snake].setInvincible(false);
+    init_color(COLOR_RED, 1000, 0, 0);
+    powerupLock = false;
 }
 
 int game::tick()
@@ -83,28 +110,29 @@ int game::tick()
             playing = false;
             return -1;
         }
-        deque<pair<int, int>> body = snake.getBody();
-        if (count(body.begin(), body.end(), inFront) > 0 && inFront != *body.end())
+        if (!snake.isInvincible())
         {
-            playing = false;
-            return -1;
+            deque<pair<int, int>> body = snake.getBody();
+            if (count(body.begin(), body.end(), inFront) > 0 && inFront != *body.end())
+            {
+                playing = false;
+                return -1;
+            }
         }
-        bool hitApple = false;
-        bool isJuicy = false;
+        int type = -1;
         for (auto it = apples.begin(); it != apples.end(); ++it)
         {
             if (it->getLoc() == inFront)
             {
-                hitApple = true;
-                isJuicy = it->getType() == JUICY;
+                type = it->getType();
                 apples.erase(it);
                 break;
             }
         }
-        if (hitApple)
+        if (type != -1)
         {
             snake.move(true);
-            if (apples.size() == 0 || isJuicy)
+            if (apples.size() == 0 || type == JUICY)
             {
                 vector<pair<int, int>> excludeLocs;
                 for (auto &snake : snakes)
@@ -116,9 +144,31 @@ int game::tick()
                 {
                     excludeLocs.push_back(apple.getLoc());
                 }
-                generateApples(isJuicy ? 5 : 1, excludeLocs, isJuicy ? NORMAL : -1);
+                if (powerupLock)
+                {
+                    generateApples(1, excludeLocs, NORMAL);
+                }
+                else
+                {
+                    generateApples(type == JUICY ? 5 : 1, excludeLocs, type != NORMAL ? NORMAL : -1);
+                }
             }
             ++score;
+            if (type == INVINCY)
+            {
+                thread powerup(&game::makeSnakeInvincible, this, 0);
+                powerup.detach();
+            }
+            else if (type == SPEEDY)
+            {
+                thread powerup(&game::mulSpeed, this, 2);
+                powerup.detach();
+            }
+            else if (type == SLOWY)
+            {
+                thread powerup(&game::mulSpeed, this, 0.5);
+                powerup.detach();
+            }
         }
         else
         {
@@ -184,11 +234,11 @@ void game::draw()
     for (auto &snake : snakes)
     {
         deque<pair<int, int>> body = snake.getBody();
-        b.addList(body, 'O', COLOR_PAIR(2));
+        b.addList(body, 'O', snake.getAttrs());
     }
     for (auto &apple : apples)
     {
-        b.addAt(apple.getLoc(), '*', apple.getType() == JUICY ? COLOR_PAIR(4) : COLOR_PAIR(1));
+        b.addAt(apple.getLoc(), '*', apple.getAttrs());
     }
     b.drawStatus(score, COLOR_PAIR(3));
     b.refresh();
