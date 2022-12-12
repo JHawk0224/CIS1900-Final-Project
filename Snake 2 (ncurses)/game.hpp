@@ -5,6 +5,7 @@
 #include <vector>
 #include "snake.hpp"
 #include "board.hpp"
+#include "apple.hpp"
 
 class game
 {
@@ -12,7 +13,7 @@ private:
     int width;
     int height;
     std::vector<snake> snakes;
-    std::vector<std::pair<int, int>> apples;
+    std::vector<apple> apples;
     board b;
     int score;
     bool playing;

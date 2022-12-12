@@ -2,8 +2,10 @@
 
 #include <iomanip>
 #include <algorithm>
+#include <vector>
 #include <deque>
 #include "random.hpp"
+#include "apple.hpp"
 #include "dir.hpp"
 
 using namespace std;
@@ -11,7 +13,7 @@ using namespace std;
 game::game(int width, int height) : width{width},
                                     height{height},
                                     snakes{vector<snake>{snake{width / 2, height / 2}}},
-                                    apples{vector<pair<int, int>>{}},
+                                    apples{vector<apple>{}},
                                     b{board{width, height}},
                                     score{0},
                                     playing{true}
@@ -29,7 +31,7 @@ game::game(int width, int height) : width{width},
 game::game(int width, int height, int timeout) : width{width},
                                                  height{height},
                                                  snakes{vector<snake>{snake{width / 2, height / 2}}},
-                                                 apples{vector<pair<int, int>>{}},
+                                                 apples{vector<apple>{}},
                                                  b{board{width, height, timeout}},
                                                  score{0},
                                                  playing{true}
@@ -46,7 +48,18 @@ game::game(int width, int height, int timeout) : width{width},
 
 void game::generateApples(int numApples, vector<pair<int, int>> excludeLocs)
 {
-    apples = randomAppleLocations(width, height, excludeLocs, numApples);
+    vector<pair<int, int>> appleLocs = randomAppleLocations(width, height, excludeLocs, numApples);
+    for (auto &loc : appleLocs)
+    {
+        if (rand() % 100 < 15)
+        {
+            apples.push_back(apple{loc.first, loc.second, JUICY});
+        }
+        else
+        {
+            apples.push_back(apple{loc.first, loc.second, NORMAL});
+        }
+    }
 }
 
 int game::tick()
@@ -112,19 +125,19 @@ void game::processInput()
 {
     chtype input = b.getInput();
     int timeout = b.getTimeout();
-    if (input == KEY_UP || input == 'w')
+    if (input == KEY_UP)
     {
         turn(0, UP);
     }
-    else if (input == KEY_RIGHT || input == 'd')
+    else if (input == KEY_RIGHT)
     {
         turn(0, RIGHT);
     }
-    else if (input == KEY_DOWN || input == 's')
+    else if (input == KEY_DOWN)
     {
         turn(0, DOWN);
     }
-    else if (input == KEY_LEFT || input == 'a')
+    else if (input == KEY_LEFT)
     {
         turn(0, LEFT);
     }
@@ -146,9 +159,10 @@ void game::draw()
     for (auto &snake : snakes)
     {
         deque<pair<int, int>> body = snake.getBody();
-        b.addList(body, 'O');
+        b.addList(body, 'O', COLOR_PAIR(2));
     }
-    b.addList(apples, '*');
+    b.addList(apples, '*', COLOR_PAIR(1));
+    b.drawStatus(score, COLOR_PAIR(3));
     b.refresh();
 }
 

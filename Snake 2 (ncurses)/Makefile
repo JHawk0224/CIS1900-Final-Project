@@ -3,7 +3,7 @@ CXXFLAGS=-std=c++20 -Wall -Werror -g
 
 all : main
 
-main : snake.o game.o main.o random.o
+main : snake.o game.o main.o random.o board.hpp
 	$(CXX) -lncurses -o $@ $^ $(CXXFLAGS)
 
 %.o : %.cpp %.hpp

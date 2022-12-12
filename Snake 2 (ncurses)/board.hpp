@@ -10,6 +10,7 @@ class board
 {
 private:
     WINDOW *board_window;
+    WINDOW *screen;
     int height, width, start_row, start_col;
     int timeout;
     void construct(int height, int width, int time_per_turn)
@@ -22,6 +23,7 @@ private:
         start_col = (max_x - width) / 2;
         timeout = time_per_turn;
         board_window = newwin(height, width, start_row, start_col);
+        screen = stdscr;
         setTimeout(time_per_turn);
         keypad(board_window, true);
     }
@@ -68,6 +70,7 @@ public:
     }
     void refresh()
     {
+        wrefresh(screen);
         wrefresh(board_window);
     }
     void initialize()
@@ -97,21 +100,31 @@ public:
         }
         return input;
     }
-    void addAt(int row, int col, chtype ch)
-    {
-        mvwaddch(board_window, row, col, ch);
-    }
-    template <typename Container>
-    void addList(Container positions, chtype ch)
-    {
-        for (auto pos : positions)
-        {
-            addAt(pos.first, pos.second, ch);
-        }
-    }
     chtype getCharAt(int row, int col)
     {
         return mvwinch(board_window, row, col);
+    }
+    void addAt(int row, int col, chtype ch, attr_t attrs = A_NORMAL)
+    {
+        wattron(board_window, attrs);
+        mvwaddch(board_window, row, col, ch);
+        wattroff(board_window, attrs);
+    }
+    template <typename Container>
+    void addList(Container positions, chtype ch, attr_t attrs = A_NORMAL)
+    {
+        for (auto pos : positions)
+        {
+            addAt(pos.first, pos.second, ch, attrs);
+        }
+    }
+    void drawStatus(int score, attr_t attrs = A_NORMAL)
+    {
+        int maxX, maxY;
+        getmaxyx(screen, maxY, maxX);
+        wattron(screen, attrs);
+        mvwprintw(screen, maxY - 1, 2, "Score: %d", score);
+        wattroff(screen, attrs);
     }
 };
 
