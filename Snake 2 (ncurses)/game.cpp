@@ -19,6 +19,7 @@ game::game(int width, int height) : width{width},
                                     b{board{width, height}},
                                     score{0},
                                     powerupLock{false},
+                                    paused{false},
                                     playing{true}
 {
     vector<pair<int, int>> excludeLocs;
@@ -39,6 +40,7 @@ game::game(int width, int height, int timeout) : width{width},
                                                  b{board{width, height, timeout}},
                                                  score{0},
                                                  powerupLock{false},
+                                                 paused{false},
                                                  playing{true}
 {
     vector<pair<int, int>> excludeLocs;
@@ -178,6 +180,11 @@ int game::tick()
     return 0;
 }
 
+bool game::isPaused()
+{
+    return paused;
+}
+
 void game::turn(int snake_i, int dir)
 {
     if (dir >= 0 && dir <= 3)
@@ -199,7 +206,6 @@ int game::getScore()
 void game::processInput()
 {
     chtype input = b.getInput();
-    int timeout = b.getTimeout();
     if (input == KEY_UP)
     {
         turn(0, UP);
@@ -218,9 +224,7 @@ void game::processInput()
     }
     else if (input == 'p')
     {
-        b.setTimeout(-1);
-        while (b.getInput() != 'p') {}
-        b.setTimeout(timeout);
+        paused = !paused;
     }
     else if (input == 'q')
     {

@@ -17,6 +17,7 @@ private:
     board b;
     int score;
     bool powerupLock;
+    bool paused;
     bool playing;
 public:
     game(int, int);
@@ -25,6 +26,7 @@ public:
     void mulSpeed(float);
     void makeSnakeInvincible(int);
     int tick();
+    bool isPaused();
     void turn(int, int);
     bool isPlaying();
     int getScore();

@@ -33,7 +33,10 @@ int main()
 	while (game.isPlaying())
     {
         game.processInput();
-        game.tick();
+        if (!game.isPaused())
+        {
+            game.tick();
+        }
         game.draw();
     }
 
