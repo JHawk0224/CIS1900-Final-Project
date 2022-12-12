@@ -20,7 +20,7 @@ private:
 public:
     game(int, int);
     game(int, int, int);
-    void generateApples(int numApples, std::vector<std::pair<int, int>> excludeLocs);
+    void generateApples(int numApples, std::vector<std::pair<int, int>> excludeLocs, int type);
     int tick();
     void turn(int, int);
     bool isPlaying();

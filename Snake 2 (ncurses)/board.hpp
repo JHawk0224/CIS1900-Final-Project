@@ -110,6 +110,10 @@ public:
         mvwaddch(board_window, row, col, ch);
         wattroff(board_window, attrs);
     }
+    void addAt(std::pair<int, int> loc, chtype ch, attr_t attrs = A_NORMAL)
+    {
+        addAt(loc.first, loc.second, ch, attrs);
+    }
     template <typename Container>
     void addList(Container positions, chtype ch, attr_t attrs = A_NORMAL)
     {

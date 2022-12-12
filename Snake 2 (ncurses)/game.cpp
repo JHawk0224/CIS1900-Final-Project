@@ -18,13 +18,14 @@ game::game(int width, int height) : width{width},
                                     score{0},
                                     playing{true}
 {
+    srand(board::milliseconds());
     vector<pair<int, int>> excludeLocs;
     for (auto &snake : snakes)
     {
         deque<pair<int, int>> body = snake.getBody();
         excludeLocs.insert(excludeLocs.end(), body.begin(), body.end());
     }
-    game::generateApples(1, excludeLocs);
+    game::generateApples(1, excludeLocs, -1);
     b.initialize();
 }
 
@@ -36,28 +37,37 @@ game::game(int width, int height, int timeout) : width{width},
                                                  score{0},
                                                  playing{true}
 {
+    srand(board::milliseconds());
     vector<pair<int, int>> excludeLocs;
     for (auto &snake : snakes)
     {
         deque<pair<int, int>> body = snake.getBody();
         excludeLocs.insert(excludeLocs.end(), body.begin(), body.end());
     }
-    game::generateApples(1, excludeLocs);
+    game::generateApples(1, excludeLocs, -1);
     b.initialize();
 }
 
-void game::generateApples(int numApples, vector<pair<int, int>> excludeLocs)
+void game::generateApples(int numApples, vector<pair<int, int>> excludeLocs, int type = -1)
 {
     vector<pair<int, int>> appleLocs = randomAppleLocations(width, height, excludeLocs, numApples);
     for (auto &loc : appleLocs)
     {
-        if (rand() % 100 < 15)
+        int random = (int)(rand() * 100);
+        if (type == -1)
         {
-            apples.push_back(apple{loc.first, loc.second, JUICY});
+            if (random < 15)
+            {
+                apples.push_back(apple{loc.first, loc.second, JUICY});
+            }
+            else
+            {
+                apples.push_back(apple{loc.first, loc.second, NORMAL});
+            }
         }
         else
         {
-            apples.push_back(apple{loc.first, loc.second, NORMAL});
+            apples.push_back(apple{loc.first, loc.second, type});
         }
     }
 }
@@ -74,16 +84,27 @@ int game::tick()
             return -1;
         }
         deque<pair<int, int>> body = snake.getBody();
-        if (count(body.begin(), body.end(), inFront) > 0)
+        if (count(body.begin(), body.end(), inFront) > 0 && inFront != *body.end())
         {
             playing = false;
             return -1;
         }
-        if (count(apples.begin(), apples.end(), inFront) > 0)
+        bool hitApple = false;
+        bool isJuicy = false;
+        for (auto it = apples.begin(); it != apples.end(); ++it)
+        {
+            if (it->getLoc() == inFront)
+            {
+                hitApple = true;
+                isJuicy = it->getType() == JUICY;
+                apples.erase(it);
+                break;
+            }
+        }
+        if (hitApple)
         {
             snake.move(true);
-            apples.erase(find(apples.begin(), apples.end(), inFront));
-            if (apples.size() == 0)
+            if (apples.size() == 0 || isJuicy)
             {
                 vector<pair<int, int>> excludeLocs;
                 for (auto &snake : snakes)
@@ -91,7 +112,11 @@ int game::tick()
                     deque<pair<int, int>> body = snake.getBody();
                     excludeLocs.insert(excludeLocs.end(), body.begin(), body.end());
                 }
-                generateApples(1, excludeLocs);
+                for (auto &apple : apples)
+                {
+                    excludeLocs.push_back(apple.getLoc());
+                }
+                generateApples(isJuicy ? 5 : 1, excludeLocs, isJuicy ? NORMAL : -1);
             }
             ++score;
         }
@@ -161,7 +186,10 @@ void game::draw()
         deque<pair<int, int>> body = snake.getBody();
         b.addList(body, 'O', COLOR_PAIR(2));
     }
-    b.addList(apples, '*', COLOR_PAIR(1));
+    for (auto &apple : apples)
+    {
+        b.addAt(apple.getLoc(), '*', apple.getType() == JUICY ? COLOR_PAIR(4) : COLOR_PAIR(1));
+    }
     b.drawStatus(score, COLOR_PAIR(3));
     b.refresh();
 }
@@ -182,7 +210,16 @@ ostream &operator<<(ostream &os, const game &g)
         {
             // print the value of the cell
             pair<int, int> loc{j, i};
-            if (count(g.apples.begin(), g.apples.end(), loc) > 0)
+            bool isApple = false;
+            for (auto apple : g.apples)
+            {
+                if (apple.getLoc() == loc)
+                {
+                    isApple = true;
+                    break;
+                }
+            }
+            if (isApple)
             {
                 os << setw(3) << "*";
             }
